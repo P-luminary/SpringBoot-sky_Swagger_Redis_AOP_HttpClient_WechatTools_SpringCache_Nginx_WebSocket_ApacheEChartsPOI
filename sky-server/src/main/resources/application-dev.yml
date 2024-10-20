@@ -1,0 +1,24 @@
+sky:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    host: localhost
+    port: 3306
+    database: sky_take_out
+    username: root
+    password: root
+  alioss:
+    endpoint: 
+    access-key-id:
+    access-key-secret: 
+    bucketName: p-sky-itcast
+  redis:
+    host: localhost
+    port: 6379
+    database: 1
+  wechat:
+    appid:
+    secret: 
+    notifyUrl:
+  baidu:
+    ak: 
+    shopAddress: 河北省唐山市丰润区燕山路街道美景花园

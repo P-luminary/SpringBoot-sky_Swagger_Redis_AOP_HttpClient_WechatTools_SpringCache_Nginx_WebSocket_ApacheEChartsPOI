@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.DishMapper">
+
+    <resultMap id="dishAndFlavorMap" type="com.sky.vo.DishVO" autoMapping="true">
+        <id column="id" property="id"></id>
+        <collection property="flavors" ofType="DishFlavor">
+            <result column="dfName" property="name"/>
+            <result column="value" property="value"/>
+        </collection>
+    </resultMap>
+
+    <!--
+        useGeneratedKeys:true 表示获取主键值
+        keyProperty="id" 表示将主键值赋给哪个属性
+    -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into dish (status, name, category_id, price, image, description, create_time, update_time, create_user,
+                          update_user)
+        VALUES (#{status}, #{name}, #{categoryId}, #{price}, #{image}, #{description}, #{createTime}, #{updateTime},
+                #{createUser}, #{updateUser})
+    </insert>
+
+    <select id="pageQuery" resultType="com.sky.vo.DishVO">
+        select d.*,c.name categoryName from dish d left join category c on d.category_id = c.id
+        <where>
+            <if test="name != null">
+                and d.name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                and d.category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and d.status = #{status}
+            </if>
+        </where>
+        order by d.create_time desc
+    </select>
+
+    <select id="getByIdWithFlavor" resultMap="dishAndFlavorMap">
+        select d.*, df.name dfName, df.value
+        from dish d
+                 left join dish_flavor df on d.id = df.dish_id
+        where d.id = #{id}
+    </select>
+
+    <update id="update">
+        update dish
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="image != null">
+                image = #{image},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateUser != null">
+                update_user = #{updateUser},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="list" resultType="Dish" parameterType="Dish">
+        select * from dish
+        <where>
+            <if test="name != null">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="listWithFlavor" parameterType="Dish" resultMap="dishAndFlavorMap">
+        select
+        a.*,b.name dfName,b.value
+        from
+        dish a
+        left join
+        dish_flavor b
+        on
+        a.id = b.dish_id
+        <where>
+            <if test="name != null">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(id) from dish
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+        </where>
+    </select>
+</mapper>
